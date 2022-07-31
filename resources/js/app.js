@@ -5,6 +5,7 @@ import {dateFormat} from './utils/helper'
 import Layout from './components/Layout'
 import LeftSidebar from './components/LeftSidebar'
 import ReceiptModal from './components/ReceiptModal'
+import PedidoModal from './components/PedidoModal'
 import RightSidebar from './components/RightSidebar'
 import ProductMode from './pages/ProductMode'
 
@@ -36,19 +37,30 @@ const App = () => {
         playSound("sound/button-21.mp3");
     }
 
-    const getTotalPrice = () => {
+    const getTotalPriceOM = () => {
         return cartItems.reduce(
-            (total, item) => total + (item['qty']*item['price'] || 0), 0
-        )
+            (total, item) => total + (item['qty']*item['priceOM'] || 0), 0
+        ).toFixed(2)
+    }
+
+    const getTotalIvaOM = () => {
+        return cartItems.reduce(
+            (total, item) => total + (item['qty']*item['ivaOM'] || 0), 0
+        ).toFixed(2)
+    }
+
+    const getTotalPedidoOM = () => {
+        return cartItems.reduce(
+            (total, item) => total + (item['qty']*item['total_priceOM'] || 0), 0
+        ).toFixed(2)
     }
 
     const addToCart = (product) => {
-        const exist = cartItems.find((item) => item.id === product.id)
-
+        const exist = cartItems.find((item) => item.cod_art === product.cod_art)
         if(exist) {
             setCartItems(
                 cartItems.map((item) =>
-                    item.id === product.id ? { ...exist, qty: exist.qty + 1 } : item 
+                    item.cod_art === product.cod_art ? { ...exist, qty: exist.qty + 1 } : item 
                 )
             )
         }else{
@@ -59,14 +71,14 @@ const App = () => {
     }
 
     const removeFromCart = (product) => {
-        const exist = cartItems.find((item) => item.id === product.id)
+        const exist = cartItems.find((item) => item.cod_art === product.cod_art)
         if(exist.qty === 1) {
-            setCartItems(cartItems.filter((item) => item.id !== product.id))
+            setCartItems(cartItems.filter((item) => item.cod_art !== product.cod_art))
             clearSound()
         }else{
             setCartItems(
                 cartItems.map((item) =>
-                    item.id === product.id ? { ...exist, qty: exist.qty - 1 } : item 
+                    item.cod_art === product.cod_art ? { ...exist, qty: exist.qty - 1 } : item 
                 )
             )
             beep()
@@ -74,7 +86,11 @@ const App = () => {
     }
 
     const updateChange = () => {
-        setChange(cash-getTotalPrice())
+        setChange(cash-getTotalPedidoOM())
+    }
+    const cleanCash = () => {
+        setCash(0)
+        beep()
     }
 
     const addCash = (amount) => {
@@ -88,6 +104,7 @@ const App = () => {
     }
 
     const submit = () => {
+        //console.log(cartItems);
         const time = new Date();
         setShowReceiptModal(true)
         setReceipt({
@@ -114,7 +131,10 @@ const App = () => {
                     removeFromCart={removeFromCart}
                     addToCart={addToCart}
                     cartItems={cartItems}
-                    getTotalPrice={getTotalPrice}
+                    getTotalPriceOM={getTotalPriceOM}
+                    getTotalIvaOM={getTotalIvaOM}
+                    getTotalPedidoOM={getTotalPedidoOM}
+                    cleanCash={cleanCash}
                     addCash={addCash}
                     cash={cash}
                     change={change}
@@ -126,7 +146,7 @@ const App = () => {
                 setShowReceiptModal={setShowReceiptModal}
                 receipt={receipt}
                 cartItems={cartItems}
-                getTotalPrice={getTotalPrice}
+                getTotalPedidoOM={getTotalPedidoOM}
                 cash={cash}
                 change={change}
                 clearAll={clearAll}

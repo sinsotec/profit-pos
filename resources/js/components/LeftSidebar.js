@@ -4,18 +4,18 @@ import web from '../utils/web'
 const LeftSidebar = props => {
 
     const logout = async () => {
-        if(confirm('Are you sure you want to log out?')) {
+        if(confirm('Seguro que deseas salir?')) {
             await web.post('/logout')
             .then((response) => {
                 if(response.status === 204) {
                     window.location.reload()
                 }else{
-                    alert('Logout error. Please try refresh your browser')
+                    alert('Logout error. Por favor refresca la pantalla')
                     console.log(response)
                 }
             })
             .catch((error) => {
-                alert('Logout error. Please try refresh your browser')
+                alert('Logout error. Por favor refresca la pantalla')
             })
         }
     }
@@ -93,7 +93,7 @@ const LeftSidebar = props => {
                     </li>
                     <li>
                         <a
-                        href="https://github.com/herilesmana/actiry-pos"
+                        href="https://pidigitalgroup.net"
                         target="_blank"
                         className="flex items-center justify-center text-cyan-200 hover:text-cyan-100 h-12 w-12 focus:outline-none"
                         >

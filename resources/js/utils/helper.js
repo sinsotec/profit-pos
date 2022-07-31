@@ -1,12 +1,12 @@
 export const numberFormat = (number) => {
-    return (Math.round(number) || "")
+    return (number || "")
         .toString()
-        .replace(/^0|\./g, "")
-        .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+        /* .replace(/^0|\./g, "")
+        .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.") */;
 }
 
 export const priceFormat = (number) => {
-    return number ? `Rp. ${numberFormat(number)}` : `Rp. 0`;
+    return number ? `$. ${numberFormat(number)}` : `$. 0`;
 }
 
 export const dateFormat = (date) => {

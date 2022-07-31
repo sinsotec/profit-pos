@@ -40,8 +40,8 @@ const Login = () => {
                     <div className="text-left w-full text-sm p-6 overflow-auto">
                         <div className="text-center mb-5">
                             <img src="img/logo.png" className="w-10 m-auto" />
-                            <h2 className="text-xl font-semibold">ACTIRY POS</h2>
-                            <p>CABANG SUNAGARA</p>
+                            <h2 className="text-xl font-semibold">PI DIGITAL POS</h2>
+                            <p>Pedacito de Cielo</p>
                         </div>
                         { error !== '' &&
                             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-5" role="alert">

@@ -10,12 +10,42 @@ const ReceiptModal = (props) => {
     const printAndProceed = async () => {
         setProcessing(true)
         // Store to database
+
         await web.post('/invoice/store', {
             receipt_number: receipt.receiptNo,
             total_amount: getTotalPedidoOM(),
             cash: cash,
             change: change,
             products: cartItems
+        })
+        .then((response) => {
+            setProcessing(false)
+            console.log(response)
+            if(response.status === 200 && response.data.success === 1) {
+                const titleBefore = document.title
+                document.title = receipt.receiptNo
+                window.print()
+                clearAll()
+                document.title = titleBefore
+            }else{
+                alert('Error. Please try again');
+            }
+        })
+        .catch((error) => {
+            setProcessing(false)
+            alert('Error. Please try again');
+        })
+    }
+
+    const guardarPedido = async () => {
+        //setProcessing(true)
+        // Store to database
+        
+        await web.post('/pedido/store', {
+            tipoDoc: "PCLI_NUM",
+            coSucur: "01",
+            Co_cli: "COR-001",
+            art: "articulos"
         })
         .then((response) => {
             setProcessing(false)
@@ -104,7 +134,7 @@ const ReceiptModal = (props) => {
                     <div className="w-96 rounded-3xl bg-white shadow-xl overflow-hidden z-10 opacity-100 scale-100">
                         <Receipt />
                         <div className="p-4 w-full">
-                            <button disabled={processing} onClick={() => printAndProceed()} className="bg-cyan-500 hover:bg-cyan-400 text-white text-lg px-4 py-3 rounded-2xl w-full focus:outline-none">
+                            <button disabled={processing} onClick={() => guardarPedido()} className="bg-cyan-500 hover:bg-cyan-400 text-white text-lg px-4 py-3 rounded-2xl w-full focus:outline-none">
                                 { processing ? 'Procesando..' : 'PROCESAR'}
                             </button>
                         </div>

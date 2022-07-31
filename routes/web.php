@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\PedidoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +21,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::post('/invoice/store', [InvoiceController::class, 'store'])->name('invoice.store');
     Route::get('/products', [ProductController::class, 'index']);
+    Route::post('/pedido/store',[PedidoController::class, 'store']);
 });
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
