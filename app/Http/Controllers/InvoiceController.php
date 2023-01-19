@@ -10,8 +10,8 @@ class InvoiceController extends Controller
 {
     public function store(Request $request)
     {
-        // dd( $request->all() );
-        $request->validate([
+         //dd( $request->all() );
+        /* $request->validate([
             'receipt_number' => 'required',
             'total_amount' => 'required',
             'cash' => 'required',
@@ -38,6 +38,7 @@ class InvoiceController extends Controller
             $invoice_product->save();
         }
 
-        return response()->json(['success' => 1, 'message' => 'Invoice store succeed']);
+        return response()->json(['success' => 1, 'message' => 'Invoice store succeed']); */
+        return "peurba";
     }
 }

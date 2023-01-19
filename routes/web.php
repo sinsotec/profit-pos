@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PedidoController;
 
@@ -22,7 +23,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/invoice/store', [InvoiceController::class, 'store'])->name('invoice.store');
     Route::get('/products', [ProductController::class, 'index']);
     Route::post('/pedido/store',[PedidoController::class, 'store']);
+    Route::get('/pedidos', [PedidoController::class, 'index']);
+    Route::get('/client/{id}', [ClienteController::class, 'show']);
 });
+
+
+
+
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.authenticate');

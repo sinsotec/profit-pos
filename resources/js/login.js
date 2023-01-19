@@ -27,7 +27,7 @@ const Login = () => {
             if(error.response.status === 422) {
                 setError('Please check your input')
             }else{
-                setError('Silahkan coba reload browser')
+                setError('Error, intenta recargar la pagina')
             }
         })
     }
@@ -54,7 +54,7 @@ const Login = () => {
                         }
                         <form id="login-form" onSubmit={handleSubmit}>
                             <div className="flex flex-col mb-4">
-                                <label className="mb-2 uppercase font-semibold text-sm text-grey-darkest" htmlFor="username">Username</label>
+                                <label className="mb-2 uppercase font-semibold text-sm text-grey-darkest" htmlFor="username">Usuario</label>
                                 <input ref={usernameRef} className="border py-2 px-3 text-grey-darkest rounded" type="text" name="username" id="username" />
                             </div>
                             <div className="flex flex-col mb-4">

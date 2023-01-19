@@ -1,23 +1,29 @@
 import React, {useState, useEffect} from 'react'
 import web from '../utils/web'
-import {priceFormat} from '../utils/helper'
+import {priceFormat, priceFormatOM} from '../utils/helper'
 import ContentLoader from 'react-content-loader'
 
 const ProductMode = (props) => {
     const [products, setProducts] = useState([]);
-    const [tasa, setTasa] = useState([]);
     const [search, setSearch] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
 
-    const { addToCart } = props
+    const { addToCart, setTasa, showProductMode } = props
 
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true)
-            const result = await web('/products')
-            setProducts(result.data[1])
-            setTasa(result.data[0].tasa)
-            setIsLoading(false)
+            try {
+                const result = await web('/products') //trycath
+                setProducts(result.data[1])
+                setTasa(result.data[0][0].tasa)
+                console.log(result.data[0][0].tasa)
+                setIsLoading(false)
+            } catch (error) {
+                alert(error);
+                setIsLoading(false)
+            }
+            
         }
         fetchData()
          //setProducts(result.data)
@@ -26,19 +32,24 @@ const ProductMode = (props) => {
     const ProductLoading = props => (
         <ContentLoader
         //   width={450}
-          height={300}
+          height={78}
         //   viewBox=""
           backgroundColor="#ffffff"
           foregroundColor="#f0f0f0"
           {...props}
         >
-          <rect x="0" y="235" rx="4" ry="4" width="100" height="9" />
+         {/*  <rect x="0" y="235" rx="4" ry="4" width="100" height="9" />
           <rect x="160" y="235" rx="3" ry="3" width="100" height="9" />
-          <rect x="0" y="10" rx="10" ry="10" width="300" height="217" />
+          <rect x="0" y="10" rx="10" ry="10" width="300" height="217" /> */}
+          <rect x="0" y="0" rx="25" ry="25" width="671.922" height="64" />
+
         </ContentLoader>
       )
 
     return (
+        <>
+        {showProductMode &&
+            <>
         <div className="w-5/12 flex-grow flex">
             <div className="flex flex-col bg-blue-gray-50 h-full w-full py-4">
                 <div className="flex px-2 flex-row relative">
@@ -47,7 +58,7 @@ const ProductMode = (props) => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
-                    <input onChange={(e) => setSearch(e.target.value)} type="text" className="bg-white rounded-3xl shadow text-lg full w-full h-16 py-4 pl-16 transition-shadow focus:shadow-2xl focus:outline-none" placeholder="Filtrar menu ..." />
+                    <input onChange={(e) => setSearch(e.target.value)} type="text" className="bg-white rounded-3xl shadow text-lg full w-full h-16 py-4 pl-16 transition-shadow focus:shadow-2xl focus:outline-none" placeholder="Filtrar articulos..." />
                 </div>
                     <div className="h-full overflow-hidden mt-4">
                         <div className="h-full overflow-y-auto px-2">
@@ -70,9 +81,10 @@ const ProductMode = (props) => {
 
                             { (products.length === 0 && isLoading === true) &&
 
-                            <div className="grid grid-cols-4 gap-4 pb-1">
-                                {
-                                    [1,2,3,4,5,6,7,8,9,10,11,12].map((item) => (
+                            <div className="gap-4 pb-3"/* "grid grid-cols-4 gap-4 pb-1" */>
+                                <h2>Cargando articulos...</h2>
+                                {   
+                                    [1,2,3,4,5,6,7,8,9,10].map((item) => (
                                         <ProductLoading key={item} className="w-full" />
                                     ))
                                 }
@@ -118,7 +130,7 @@ const ProductMode = (props) => {
                                         </div> */}
                                         <div className="pb-3 px-3 text-sm mt-3">
                                             <p className="flex-grow truncate mr-1">{ item.art_des + `  (${item.cod_art})`}</p>
-                                            <p className="nowrap font-semibold">{ `${priceFormat(item.priceOM)} IVA ${priceFormat(item.ivaOM)} PVP ${priceFormat(item.total_priceOM)}` }</p>
+                                            <p className="nowrap font-semibold">{ `Precio ${priceFormatOM(item.priceOM)} IVA ${priceFormatOM(item.ivaOM)} Total ${priceFormatOM(item.total_priceOM)}` }</p>
                                         </div>
                                     </div>
                                 ))}
@@ -128,6 +140,9 @@ const ProductMode = (props) => {
                 </div>
             </div>
         </div>
+        </>    
+    }
+        </>
     )
 }
 

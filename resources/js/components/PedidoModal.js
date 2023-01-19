@@ -1,10 +1,24 @@
 import React, {useState} from 'react'
-import { priceFormat } from '../utils/helper';
+import { priceFormat, priceFormatOM } from '../utils/helper';
 import web from '../utils/web'
 
-const ReceiptModal = (props) => {
+const PedidoModal = (props) => {
 
-    const {showReceiptModal, setShowReceiptModal, receipt, cartItems, getTotalPedidoOM, cash, change, clearAll} = props;
+    const { showPedidoModal, 
+            setShowPedidoModal,
+            receipt, 
+            cartItems, 
+            getTotalPrice, 
+            getTotalIva,
+            getTotalPedido,
+            getTotalPriceOM,
+            getTotalIvaOM, 
+            getTotalPedidoOM, 
+            cash, 
+            change,
+            tasa,
+            clienteId, 
+            clearAll} = props;
     const [processing, setProcessing] = useState(false)
 
     const printAndProceed = async () => {
@@ -40,30 +54,58 @@ const ReceiptModal = (props) => {
     const guardarPedido = async () => {
         //setProcessing(true)
         // Store to database
-        
-        await web.post('/pedido/store', {
-            tipoDoc: "PCLI_NUM",
-            coSucur: "01",
-            Co_cli: "COR-001",
-            art: "articulos"
-        })
-        .then((response) => {
-            setProcessing(false)
-            console.log(response)
-            if(response.status === 200 && response.data.success === 1) {
-                const titleBefore = document.title
-                document.title = receipt.receiptNo
-                window.print()
-                clearAll()
-                document.title = titleBefore
-            }else{
+        if(clienteId){
+            const articulos = [];
+            cartItems.map(item => {
+                articulos.push({
+                    sCo_Art: item.cod_art,
+                    sDes_Art: item.art_des,
+                    sCo_Uni: item.co_uni,
+                    sCo_Alma: "CCS",
+                    sCo_Precio: "01",
+                    sTipo_Imp: item.tipo_impuesto,
+                    deTotal_Art: item.qty,
+                    dePrec_Vta: item.price,
+                    dePorc_Imp: item.por_imp,
+                    deReng_Neto: item.price * item.qty, 
+                    dePendiente: item.qty, 
+                    deMonto_Imp: item.iva
+                })
+            })
+            const datos = {tipoDoc: "PCLI_NUM",
+                coSucur: "01",
+                Co_Cli: clienteId,
+                sCo_Mone: "USD",
+                deTasa: tasa,
+                deSaldo: getTotalPedidoOM(),
+                deTotal_Bruto: getTotalPriceOM(),
+                deMonto_Imp: getTotalIvaOM(),
+                deTotal_Neto: getTotalPedidoOM(),
+                art: articulos    
+             };
+            console.log(datos);
+            await web.post('/pedido/store', datos)
+            .then((response) => {
+                setProcessing(false)
+                console.log(response.data)
+                if(response.status === 200 /* && response.data.success === 1 */) {
+                    alert(`Pedido ${response.data} creado`);
+                    //const titleBefore = document.title
+                    //document.title = receipt.receiptNo
+                    //window.print()
+                    clearAll()
+                    //document.title = titleBefore
+                }else{
+                    alert('Error. Please try again');
+                }
+             })
+            .catch((error) => {
+                setProcessing(false)
                 alert('Error. Please try again');
-            }
-        })
-        .catch((error) => {
-            setProcessing(false)
-            alert('Error. Please try again');
-        })
+            })
+        }else{
+            alert('Debe ingresar un cliente');
+        }
     }
 
     const Receipt = () => {
@@ -96,10 +138,10 @@ const ReceiptModal = (props) => {
                                 <td className="py-2 text-left">
                                 <span>{ item.art_des }</span>
                                 <br/>
-                                <small>{ priceFormat(item.priceOM) }</small>
+                                <small>{ priceFormatOM(item.priceOM) }</small>
                                 </td>
                                 <td className="py-2 text-center">{ item.qty }</td>
-                                <td className="py-2 text-right">{ priceFormat(item.qty*item.priceOM) }</td>
+                                <td className="py-2 text-right">{ priceFormatOM(item.qty*item.priceOM) }</td>
                             </tr>
                         ))}
                     </tbody>
@@ -108,17 +150,21 @@ const ReceiptModal = (props) => {
                 <hr className="my-2" />
                 <div>
                     <div className="flex font-semibold">
-                        <span className="flex-grow">TOTAL</span>
-                        <span>{ priceFormat(getTotalPedidoOM()) }</span>
+                        <span className="flex-grow">Subtotal $</span>
+                        <span>{ priceFormatOM(getTotalPriceOM()) }</span>
                     </div>
                     <div className="flex text-xs font-semibold">
-                        <span className="flex-grow">PAGO</span>
-                        <span>{ priceFormat(cash) }</span>
+                        <span className="flex-grow">IVA</span>
+                        <span>{ priceFormatOM(getTotalIvaOM()) }</span>
                     </div>
                     <hr className="my-2" />
                     <div className="flex text-xs font-semibold">
-                        <span className="flex-grow">CAMBIO</span>
-                        <span>{ priceFormat(change) }</span>
+                        <span className="flex-grow">TOTAL Bs</span>
+                        <span>{ priceFormat(getTotalPedido()) }</span>
+                    </div>
+                    <div className="flex text-xs font-semibold">
+                        <span className="flex-grow">TOTAL $</span>
+                        <span>{ priceFormatOM(getTotalPedidoOM()) }</span>
                     </div>
                 </div>
             </div>
@@ -127,10 +173,10 @@ const ReceiptModal = (props) => {
 
     return (
         <>
-            { showReceiptModal &&
+            { showPedidoModal &&
             <>
-                <div className="hide-print fixed w-full h-screen left-0 top-0 z-10 flex flex-wrap justify-center content-center p-24">
-                    <div onClick={() => setShowReceiptModal(false)} className="fixed glass w-full h-screen left-0 top-0 z-0 opacity-100"></div>
+                <div className="hide-print fixed w-full h-screen left-0 top- z-10 flex flex-wrap justify-center content-center p-24 modal overflow-y-auto">
+                    <div onClick={() => setShowPedidoModal(false)} className="fixed glass w-full h-screen left-0 top-0 z-0 opacity-100"></div>
                     <div className="w-96 rounded-3xl bg-white shadow-xl overflow-hidden z-10 opacity-100 scale-100">
                         <Receipt />
                         <div className="p-4 w-full">
@@ -149,4 +195,4 @@ const ReceiptModal = (props) => {
     )
 }
 
-export default ReceiptModal
+export default PedidoModal

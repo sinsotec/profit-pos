@@ -32,7 +32,7 @@ const ReceiptModal = (props) => {
         })
         .catch((error) => {
             setProcessing(false)
-            alert('Error. Please try again');
+            alert('Error. Please try again 2');
         })
     }
 

@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
 
-class PedidoController extends Controller
+class ClienteController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,9 +15,7 @@ class PedidoController extends Controller
      */
     public function index()
     {
-        $response = Http::get('http://localhost:3000/pedidos/DEMOA');
-        $pedidos = $response->json();
-        return $pedidos;//Product::all();
+        //
     }
 
     /**
@@ -38,15 +36,7 @@ class PedidoController extends Controller
      */
     public function store(Request $request)
     {
-        // http://localhost:3000/pedido/insertar/DEMOA
-        $response = Http::post('http://localhost:3000/pedidos/insertar/DEMOA', $request->toArray());
-        //$response =  $request->toArray();
-        /* $response = [
-            'name' => 'Steve',
-            'role' => 'Network Administrator',
-        ]; */
-        return $response;
-        //return response()->json(['success' => 1, 'message' => 'Invoice store succeed']);
+        //
     }
 
     /**
@@ -55,9 +45,10 @@ class PedidoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(string $id)
     {
-        //
+        $response = Http::get('http://localhost:3000/cliente/DEMOA?sCo_Cli=' . $id);
+        return $response[0];
     }
 
     /**
